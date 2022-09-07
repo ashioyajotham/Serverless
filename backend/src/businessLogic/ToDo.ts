@@ -1,5 +1,4 @@
 import 'source-map-support/register'
-
 import * as uuid from 'uuid'
 
 import {TodoItem} from "../models/TodoItem";
