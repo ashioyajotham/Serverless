@@ -1,16 +1,29 @@
+import 'source-map-support/register'
+
+import * as uuid from 'uuid'
+
 import {TodoItem} from "../models/TodoItem";
 import {parseUserId} from "../auth/utils";
-import {CreateTodoRequest} from "../requests/CreateTodoRequest";
-import {UpdateTodoRequest} from "../requests/UpdateTodoRequest";
 import {TodoUpdate} from "../models/TodoUpdate";
 import {ToDoAccess} from "../dataLayer/ToDoAccess";
+import {CreateTodoRequest} from "../requests/CreateTodoRequest";
+import {UpdateTodoRequest} from "../requests/UpdateTodoRequest";
+import { createLogger } from '../utils/logger'
+
 
 const uuidv4 = require('uuid/v4');
 const toDoAccess = new ToDoAccess();
 
-export async function getAllToDo(jwtToken: string): Promise<TodoItem[]> {
-    const userId = parseUserId(jwtToken);
-    return toDoAccess.getAllToDo(userId);
+
+const logger = createLogger('todos')
+
+const todosAccess = new TodosAccess()
+const todosStorage = new TodosStorage()
+
+export async function getTodos(userId: string): Promise<TodoItem[]> {
+  logger.info(`Retrieving all todos for user ${userId}`, { userId })
+
+  return await todosAccess.getTodoItems(userId)
 }
 
 export function createToDo(createTodoRequest: CreateTodoRequest, jwtToken: string): Promise<TodoItem> {
@@ -28,14 +41,20 @@ export function createToDo(createTodoRequest: CreateTodoRequest, jwtToken: strin
     });
 }
 
-export function updateToDo(updateTodoRequest: UpdateTodoRequest, todoId: string, jwtToken: string): Promise<TodoUpdate> {
+export async function getAllToDo(jwtToken: string): Promise<TodoItem[]> {
     const userId = parseUserId(jwtToken);
-    return toDoAccess.updateToDo(updateTodoRequest, todoId, userId);
+    return toDoAccess.getAllToDo(userId);
 }
+
 
 export function deleteToDo(todoId: string, jwtToken: string): Promise<string> {
     const userId = parseUserId(jwtToken);
     return toDoAccess.deleteToDo(todoId, userId);
+}
+
+export function updateToDo(updateTodoRequest: UpdateTodoRequest, todoId: string, jwtToken: string): Promise<TodoUpdate> {
+    const userId = parseUserId(jwtToken);
+    return toDoAccess.updateToDo(updateTodoRequest, todoId, userId);
 }
 
 export function generateUploadUrl(todoId: string): Promise<string> {

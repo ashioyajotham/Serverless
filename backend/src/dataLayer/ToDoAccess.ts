@@ -1,9 +1,14 @@
+import 'source-map-support/register'
+import { createLogger } from '../utils/logger'
+
 import * as AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Types } from 'aws-sdk/clients/s3';
 import { TodoItem } from "../models/TodoItem";
 import { TodoUpdate } from "../models/TodoUpdate";
 
+const logger = createLogger('todosAccess')
+const XAWS = AWSXRay.captureAWS(AWS)
 
 export class ToDoAccess {
     constructor(
@@ -12,6 +17,12 @@ export class ToDoAccess {
         private readonly todoTable = process.env.TODOS_TABLE,
         private readonly s3BucketName = process.env.S3_BUCKET_NAME) {
     }
+
+
+    async todoItemExists(todoId: string): Promise<boolean> {
+        const item = await this.getTodoItem(todoId)
+        return !!item
+      }
 
     async getAllToDo(userId: string): Promise<TodoItem[]> {
         console.log("Getting all todo");
@@ -26,6 +37,7 @@ export class ToDoAccess {
                 ":userId": userId
             }
         };
+
 
         const result = await this.docClient.query(params).promise();
         console.log(result);
