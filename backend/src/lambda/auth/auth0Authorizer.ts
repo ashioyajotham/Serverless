@@ -8,7 +8,8 @@ import { JwtPayload } from '../../auth/JwtPayload'
 const logger = createLogger('auth');
 
 // Todo
-const jwksUrl = '';
+// JSON Key set
+const jwksUrl = 'https://dev-er3nr9kr.us.auth0.com/.well-known/jwks.json';
 
 
 export const handler = async (
