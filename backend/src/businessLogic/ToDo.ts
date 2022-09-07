@@ -60,3 +60,11 @@ export function updateToDo(updateTodoRequest: UpdateTodoRequest, todoId: string,
 export function generateUploadUrl(todoId: string): Promise<string> {
     return toDoAccess.generateUploadUrl(todoId);
 }
+
+export async function deleteTodoItem(userId: string, todoId: string) {
+
+    await Promise.all([
+      todoAccess.deleteTodoItem(userId, todoId),
+      todoAccess.deleteTodoItemAttachment(todoId)
+    ])  
+  }
